@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingApi.Services
 {
-    public class EfSqlShopping : ILookupProducts
+    public class EfSqlShopping : ILookupProducts, IProductCommands
     {
         private readonly ShoppingDataContext _context;
         private readonly IMapper _mapper;
@@ -21,6 +21,22 @@ namespace ShoppingApi.Services
             _context = context;
             _mapper = mapper;
             _config = config;
+        }
+
+        public async Task<GetProductDetailsResponse> AddProduct(PostProductRequest productToAdd)
+        {
+            var product = _mapper.Map<Product>(productToAdd);
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+            return _mapper.Map<GetProductDetailsResponse>(product);
+        }
+
+        public async Task<GetProductDetailsResponse> GetById(int id)
+        {
+            return await _context.GetItemsInInventory()
+                 .Where(p => p.Id == id)
+                 .ProjectTo<GetProductDetailsResponse>(_config)
+                 .SingleOrDefaultAsync();
         }
 
         public async Task<GetProductsResponse> GetSummary()

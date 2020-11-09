@@ -35,6 +35,7 @@ namespace ShoppingApi
                 options.UseSqlServer(Configuration.GetConnectionString("shopping"))
             );
             services.AddScoped<ILookupProducts, EfSqlShopping>();
+            services.AddScoped<IProductCommands, EfSqlShopping>();
 
             var mapperConfig = new MapperConfiguration(opt =>
             {
