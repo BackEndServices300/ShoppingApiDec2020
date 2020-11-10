@@ -53,7 +53,8 @@ namespace ShoppingApi
             services.AddSingleton<IMapper>(mapper);
             services.AddSingleton<MapperConfiguration>(mapperConfig);
 
-    
+
+            services.AddScoped<ICurbsideCommands, EfSqlSynchCurbside>();
 
 
         }
