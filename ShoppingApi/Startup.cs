@@ -55,6 +55,7 @@ namespace ShoppingApi
 
 
             services.AddScoped<ICurbsideCommands, EfSqlSynchCurbside>();
+            services.AddScoped<ICurbsideLookups, EfSqlSynchCurbside>();
 
 
         }

@@ -31,7 +31,7 @@ namespace ShoppingApi.Controllers
             }
         }
 
-        [HttpGet("/cubsideorders/{id:int}")]
+        [HttpGet("/curbsideorders/{id:int}")]
         public async Task<ActionResult> GetOrder(int id)
         {
             GetCurbsideResponse response = await _curbsideLookups.GetById(id);
