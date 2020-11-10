@@ -27,11 +27,11 @@ namespace ShoppingApi.Controllers
             } else
             {
                 GetCurbsideResponse response = await _curbsideCommands.PlaceOrder(request);
-                return Created(new Uri($"http://localhost:3000/curbsideorders/{response.Id}"), response);
+                return CreatedAtRoute("curbsideorders#getbyid", new { id = response.Id }, response);
             }
         }
 
-        [HttpGet("/curbsideorders/{id:int}")]
+        [HttpGet("/curbsideorders/{id:int}", Name ="curbsideorders#getbyid")]
         public async Task<ActionResult> GetOrder(int id)
         {
             GetCurbsideResponse response = await _curbsideLookups.GetById(id);

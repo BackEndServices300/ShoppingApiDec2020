@@ -11,7 +11,7 @@ namespace ShoppingApi.Models.Curbside
         public int Id { get; set; }
         public string For { get; set; }
         public int[] Items { get; set; }
-        public DateTime PickupReadyAt { get; set; }
+        public DateTime? PickupReadyAt { get; set; }
     }
 
 }
