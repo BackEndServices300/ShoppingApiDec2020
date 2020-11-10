@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using ShoppingApi.Data;
 using ShoppingApi.Models.Products;
 using System;
@@ -15,12 +16,14 @@ namespace ShoppingApi.Services
         private readonly ShoppingDataContext _context;
         private readonly IMapper _mapper;
         private readonly MapperConfiguration _config;
+        private readonly IOptions<PricingConfiguration> _pricing;
 
-        public EfSqlShopping(ShoppingDataContext context, IMapper mapper, MapperConfiguration config)
+        public EfSqlShopping(ShoppingDataContext context, IMapper mapper, MapperConfiguration config, IOptions<PricingConfiguration> pricing)
         {
             _context = context;
             _mapper = mapper;
             _config = config;
+            _pricing = pricing;
         }
 
         public async Task<GetProductDetailsResponse> AddProduct(PostProductRequest productToAdd)
@@ -33,10 +36,15 @@ namespace ShoppingApi.Services
 
         public async Task<GetProductDetailsResponse> GetById(int id)
         {
-            return await _context.GetItemsInInventory()
+            var product =  await _context.GetItemsInInventory()
                  .Where(p => p.Id == id)
                  .ProjectTo<GetProductDetailsResponse>(_config)
                  .SingleOrDefaultAsync();
+            //if(product != null)
+            //{
+            //    product.UnitPrice *= _pricing.Value.Markup;
+            //}
+            return product;
         }
 
         public async Task<GetProductsResponse> GetSummary()

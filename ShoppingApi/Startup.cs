@@ -37,14 +37,25 @@ namespace ShoppingApi
             services.AddScoped<ILookupProducts, EfSqlShopping>();
             services.AddScoped<IProductCommands, EfSqlShopping>();
 
+
+            var pricingConfig = new PricingConfiguration();
+            Configuration.GetSection(pricingConfig.SectionName).Bind(pricingConfig);
+            // Makes this injectable into services using IOptions<T>
+            services.Configure<PricingConfiguration>(Configuration.GetSection(pricingConfig.SectionName));
+
+
             var mapperConfig = new MapperConfiguration(opt =>
             {
-                opt.AddProfile(new ProductProfile());
+                opt.AddProfile(new ProductProfile(pricingConfig));
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton<IMapper>(mapper);
             services.AddSingleton<MapperConfiguration>(mapperConfig);
+
+    
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
