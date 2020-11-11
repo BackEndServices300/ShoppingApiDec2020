@@ -16,6 +16,7 @@ namespace ShoppingApi.Services
         private readonly ILogger<CurbsideOrderProcessor> _logger;
         private readonly CurbsideChannel _channel;
         private readonly IServiceProvider _serviceProvider;
+       
 
 
         public CurbsideOrderProcessor(ILogger<CurbsideOrderProcessor> logger, CurbsideChannel channel, IServiceProvider serviceProvider)
@@ -23,6 +24,7 @@ namespace ShoppingApi.Services
             _logger = logger;
             _channel = channel;
             _serviceProvider = serviceProvider;
+           
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,7 +44,8 @@ namespace ShoppingApi.Services
                     await Task.Delay(1000); // doing the "Important work"
                     _logger.LogInformation($"Processed item {item} for order {order.OrderId}");
                 }
-                savedOrder.PickupReadyAt = DateTime.Now.AddDays(new Random().Next(1, 3));
+                var pickup = scope.ServiceProvider.GetRequiredService<IGenerateCurbsidePickupTimes>();
+                savedOrder.PickupReadyAt = await pickup.GetPickupDate(savedOrder);
                 await context.SaveChangesAsync();
             }
         }
