@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using ShoppingApi.Data;
 using ShoppingApi.Profiles;
 using ShoppingApi.Services;
@@ -29,6 +30,10 @@ namespace ShoppingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddSeq(Configuration.GetSection("seq"));
+            });
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.IgnoreNullValues = true;
@@ -60,7 +65,7 @@ namespace ShoppingApi
             services.AddSingleton<IMapper>(mapper);
             services.AddSingleton<MapperConfiguration>(mapperConfig);
 
-
+            
             services.AddScoped<ICurbsideCommands, EfSqlAsyncCurbside>();
             services.AddScoped<ICurbsideLookups, EfSqlAsyncCurbside>();
             services.AddSingleton<CurbsideChannel>();
@@ -79,6 +84,7 @@ namespace ShoppingApi
             }
 
             app.UseRouting();
+            
 
             app.UseAuthorization();
 

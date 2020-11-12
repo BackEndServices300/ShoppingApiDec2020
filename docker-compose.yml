@@ -1,0 +1,50 @@
+version: "3.7"
+services:
+  api:
+    image: jeffrygonzalez/shopping-api-nov-2020:latest
+    ports:
+      - 80:80
+    environment: 
+      - ConnectionStrings__shopping=server=sql;database=shopping;user=sa;password=TokyoJoe138!
+      - Pricing:Markup=1.35
+      - PickupEstimator:url=https://pickup:443
+      - Seq:ServerUrl=http://seq
+      - Kestrel__Certificates__Default__Path=/app/Infrastructure/Certificate/certificate.pfx
+      - Kestrel__Certificates__Default__Password=TokyoJoe138!
+    volumes:
+      - c:\dev\certs:/app/Infrastructure/Certificate
+    networks:
+      - my-network
+
+  sql:
+    image: jeffrygonzalez/shopping-sql-nov-2020:latest
+    networks:
+      - my-network
+    ports:
+      - 1433:1433
+  pickup:
+    image: jeffrygonzalez/pickup-service-nov-2020
+    ports:
+      - 8080:80
+      - 443:443
+    environment: 
+      - ASPNETCORE_URLS=https://+443;http://+8080
+      - Kestrel__Certificates__Default__Path=/app/Infrastructure/Certificate/certificate.pfx
+      - Kestrel__Certificates__Default__Password=TokyoJoe138!
+      - ASPNETCORE_HTTPS_PORT=44349
+    volumes:
+      - c:\dev\certs:/app/Infrastructure/Certificate
+    networks:
+      - my-network
+  seq:
+  # docker run --name seq -d --restart unless-stopped -e ACCEPT_EULA=Y -p 5341:80 datalust/seq:latest
+    image: datalust/seq:latest
+    environment: 
+      - ACCEPT_EULA=Y
+    ports:
+      - 5342:80
+    networks:
+      - my-network
+networks:
+  my-network:
+    driver: bridge
